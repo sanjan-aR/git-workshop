@@ -119,6 +119,14 @@ def ask_bot(question):
 
     docs = retriever.invoke(question)
 
+    st.write("### Retrieved Documents")
+
+    for i, doc in enumerate(docs):
+        st.write(f"Document {i+1}:")
+        st.write(os.path.basename(doc.metadata["source"]))
+        st.write(doc.page_content[:500])
+        st.write("---")
+
     context = format_docs(docs)
 
     response = (
