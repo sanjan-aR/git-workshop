@@ -119,6 +119,16 @@ def ask_bot(question):
 
     docs = retriever.invoke(question)
 
+    docs = retriever.invoke(question)
+
+    print("=" * 80)
+    print("QUESTION:", question)
+    
+    for i, doc in enumerate(docs):
+        print(f"\nDOC {i+1}")
+        print("SOURCE:", os.path.basename(doc.metadata["source"]))
+        print(doc.page_content)
+
     context = format_docs(docs)
 
     response = (
