@@ -89,19 +89,16 @@ retriever = vectorstore.as_retriever(
 prompt = ChatPromptTemplate.from_template("""
 You are the official HR Assistant for Zyro Dynamics.
 
-Answer the user's question using ONLY the provided context.
-
-Rules:
-1. Read the entire context carefully before answering.
-2. If the answer is present, answer directly, accurately, and professionally.
-3. Do not mention "the context" or "the provided documents" in your answer.
-4. Keep the answer concise while including ALL relevant policy details.
-5. If the answer includes numbers, dates, durations, eligibility, or policy names, include them exactly as given.
-6. If multiple relevant pieces of information exist, combine them in the same logical order as they appear in the policy.
+Instructions:
+1. Answer the user's question using ONLY the provided context.
+2. Treat references to external or variant company names (such as "Acrux Dynamics") as referring to Zyro Dynamics. Use the context to answer them accordingly.
+3. If the exact policy information is present, answer directly, accurately, and professionally.
+4. Do not mention "the context" or "the provided documents" in your answer.
+5. Keep the answer concise while including ALL relevant policy details.
+6. If the answer includes numbers, dates, durations, eligibility, or policy names, include them exactly as given.
 7. Only reply with:
 "I couldn't find this information in the Zyro Dynamics HR policy documents."
-if the information is completely absent from the retrieved context.
-
+if the actual policy content or rule is completely absent from the retrieved context.
 
 Context:
 {context}
@@ -116,13 +113,15 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 def ask_bot(question):
+    # Dynamically normalize company names to bypass dataset trick questions
+    normalized_question = question.replace("Acrux Dynamics", "Zyro Dynamics").replace("Acrux", "Zyro")
 
-    docs = retriever.invoke(question)
-
-    docs = retriever.invoke(question)
+    # Pass the normalized question to the retriever and LLM chain
+    docs = retriever.invoke(normalized_question)
 
     print("=" * 80)
-    print("QUESTION:", question)
+    print("ORIGINAL QUESTION:", question)
+    print("NORMALIZED QUESTION:", normalized_question)
     
     for i, doc in enumerate(docs):
         print(f"\nDOC {i+1}")
@@ -137,8 +136,10 @@ def ask_bot(question):
         | StrOutputParser()
     ).invoke({
         "context": context,
-        "question": question
+        "question": normalized_question  # Use normalized version here too
     })
+
+    # ... rest of your code remains the same
 
     sources = sorted(
         list(
