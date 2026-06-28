@@ -54,7 +54,7 @@ def load_vectorstore():
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
-        chunk_overlap=100
+        chunk_overlap=150
     )
 
     chunks = splitter.split_documents(documents)
@@ -118,14 +118,6 @@ def format_docs(docs):
 def ask_bot(question):
 
     docs = retriever.invoke(question)
-
-    st.write("### Retrieved Documents")
-
-    for i, doc in enumerate(docs):
-        st.write(f"Document {i+1}:")
-        st.write(os.path.basename(doc.metadata["source"]))
-        st.write(doc.page_content[:500])
-        st.write("---")
 
     context = format_docs(docs)
 
