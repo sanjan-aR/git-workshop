@@ -54,7 +54,7 @@ def load_vectorstore():
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
-        chunk_overlap=150
+        chunk_overlap=100
     )
 
     chunks = splitter.split_documents(documents)
