@@ -76,8 +76,9 @@ vectorstore = load_vectorstore()
 retriever = vectorstore.as_retriever(
     search_type="mmr",
     search_kwargs={
-        "k":3,
-        "fetch_k":10
+        "k": 5,
+        "fetch_k": 20,
+        "lambda_mult": 0.8
     }
 )
 
@@ -88,14 +89,19 @@ retriever = vectorstore.as_retriever(
 prompt = ChatPromptTemplate.from_template("""
 You are the official HR Assistant for Zyro Dynamics.
 
-Use ONLY the provided context to answer the user's question.
+Answer the user's question using ONLY the provided context.
 
 Rules:
-1. Never make up information.
-2. Answer only from the provided context.
-3. If the answer is not available in the context, reply exactly:
+1. Read the entire context carefully before answering.
+2. If the answer is present, answer directly, accurately, and professionally.
+3. Do not mention "the context" or "the provided documents" in your answer.
+4. Keep the answer concise while including ALL relevant policy details.
+5. If the answer includes numbers, dates, durations, eligibility, or policy names, include them exactly as given.
+6. If multiple relevant pieces of information exist, combine them in the same logical order as they appear in the policy.
+7. Only reply with:
+"I couldn't find this information in the Zyro Dynamics HR policy documents."
+if the information is completely absent from the retrieved context.
 
-"Based on the available Zyro Dynamics HR policy documents, I couldn't find information that answers this question."
 
 Context:
 {context}
